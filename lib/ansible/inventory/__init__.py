@@ -51,13 +51,15 @@ class Inventory(object):
     Host inventory for ansible.
     """
 
-    def __init__(self, loader, variable_manager, host_list=C.DEFAULT_HOST_LIST):
+    def __init__(self, loader, variable_manager, host_list=C.DEFAULT_HOST_LIST,
+                 ephemeral_hostfile=False):
 
         # the host file file, or script path, or list of hosts
         # if a list, inventory data will NOT be loaded
         self.host_list = host_list
         self._loader = loader
         self._variable_manager = variable_manager
+        self._ephemeral_hostfile = ephemeral_hostfile
 
         # caching to avoid repeated calculations, particularly with
         # external inventory scripts.
@@ -127,8 +129,10 @@ class Inventory(object):
                 host_list = os.path.join(self.host_list, "")
                 self.parser = InventoryDirectory(loader=self._loader, groups=self.groups, filename=host_list)
             else:
-                self.parser = get_file_parser(host_list, self.groups, self._loader)
-                vars_loader.add_directory(self.basedir(), with_subdir=True)
+                self.parser = get_file_parser(host_list, self.groups, self._loader, ephemeral_hostfile=self._ephemeral_hostfile)
+                basedir = self.basedir()
+                if basedir:
+                    vars_loader.add_directory(basedir, with_subdir=True)
 
             if not self.parser:
                 # should never happen, but JIC

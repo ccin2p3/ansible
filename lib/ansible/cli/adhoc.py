@@ -121,7 +121,8 @@ class AdHocCLI(CLI):
         variable_manager = VariableManager()
         variable_manager.extra_vars = load_extra_vars(loader=loader, options=self.options)
 
-        inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=self.options.inventory)
+        inventory = Inventory(loader=loader, variable_manager=variable_manager, host_list=self.options.inventory,
+                              ephemeral_hostfile=self.options.ephemeral_inventory)
         variable_manager.set_inventory(inventory)
 
 

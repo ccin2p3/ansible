@@ -103,6 +103,12 @@ Alternatively, you can use a comma-separated list of hosts or a single host with
 Further limits the selected host/group patterns.
 You can prefix it with '~' to indicate that the pattern in a regex.
 
+*--ephemeral-inventory*::
+
+Create a temporary copy of the inventory source and work with
+that copy. This is required when dealing with inventory sources 
+such as shell process substitution or /dev/stdin.
+
 *--list-hosts*::
 
 Outputs a list of matching hosts; does not execute anything else.

@@ -230,6 +230,8 @@ class CLI(object):
                 help='outputs a list of matching hosts; does not execute anything else')
             parser.add_option('-l', '--limit', default=C.DEFAULT_SUBSET, dest='subset',
                 help='further limit selected hosts to an additional pattern')
+            parser.add_option('--ephemeral-inventory', default=False, action='store_true', dest='ephemeral_inventory',
+                help='inventory file is ephemeral and can\'t be opened more than once')
 
         if module_opts:
             parser.add_option('-M', '--module-path', dest='module_path', default=None,

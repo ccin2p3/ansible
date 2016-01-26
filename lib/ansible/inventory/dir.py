@@ -21,6 +21,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 import os
+import tempfile
 
 from ansible import constants as C
 from ansible.errors import AnsibleError
@@ -34,7 +35,26 @@ from ansible.inventory.script import InventoryScript
 
 __all__ = ['get_file_parser']
 
-def get_file_parser(hostsfile, groups, loader):
+def _copy_ephemeral_inventory(hostsfile):
+    # copy inventory file to a temporary
+    # file. Useful for inventory retrieved
+    # using Shell process substitution
+    filed, path = tempfile.mkstemp(prefix='ansible-ephemeral-inventory')
+    fileh = os.fdopen(filed, 'w')
+
+    buf = None
+    with open(hostsfile, 'r') as fhosts:
+        while True:
+            buf = fhosts.read(1024)
+            if not buf:
+                break
+            fileh.write(buf)
+
+    fileh.close()
+
+    return path
+
+def get_file_parser(hostsfile, groups, loader, ephemeral_hostfile=False):
     # check to see if the specified file starts with a
     # shebang (#!/), so if an error is raised by the parser
     # class we can show a more apropos error
@@ -43,6 +63,9 @@ def get_file_parser(hostsfile, groups, loader):
     processed = False
     myerr = []
     parser = None
+
+    if ephemeral_hostfile is True:
+        hostsfile = _copy_ephemeral_inventory(hostsfile)
 
     try:
         inv_file = open(hostsfile)
@@ -72,6 +95,9 @@ def get_file_parser(hostsfile, groups, loader):
                               "Perhaps you want to correct this with `chmod +x %s`?" % hostsfile)
             else:
                 myerr.append(str(e))
+
+    if ephemeral_hostfile is True:
+        os.unlink(hostsfile)
 
     if not processed and myerr:
         raise AnsibleError( '\n'.join(myerr) )
