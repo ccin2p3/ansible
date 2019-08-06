@@ -137,7 +137,7 @@ class Group(object):
             if key == 'gid' and kwargs[key] is not None:
                 cmd.append('-g')
                 cmd.append(str(kwargs[key]))
-                if self.non_unique:
+                if self.non_unique and not self.local:
                     cmd.append('-o')
             elif key == 'system' and kwargs[key] is True:
                 cmd.append('-r')

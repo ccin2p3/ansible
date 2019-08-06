@@ -586,7 +586,7 @@ class User(object):
             cmd.append('-u')
             cmd.append(self.uid)
 
-            if self.non_unique:
+            if self.non_unique and not self.local:
                 cmd.append('-o')
 
         if self.seuser is not None:
